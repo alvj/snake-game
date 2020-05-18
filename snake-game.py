@@ -190,7 +190,7 @@ def main():
     snake = create_snake(canvas, snake_positions)
     food = create_food(canvas, food_position)
     canvas.bind_all("<Key>", on_key_press)
-    update_frame(canvas, snake_positions, snake, food_position, food, score)
+    canvas.after(2000, update_frame, canvas, snake_positions, snake, food_position, food, score)
     canvas.mainloop()
 
 
