@@ -5,7 +5,7 @@ from random import randint
 # --------------------
 WIDTH = 800
 HEIGHT = 800
-SQUARE_SIZE = 40
+SQUARE_SIZE = 50
 
 #   COLORS
 # ------------
