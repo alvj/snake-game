@@ -49,6 +49,10 @@ def create_food(canvas, food_position):
         fill=FOOD_COLOR
     )
 
+def update_frame(canvas, snake_positions, snake):
+    new_snake_positions = move_snake(canvas, snake_positions, snake)
+    canvas.after(100, update_frame, canvas, new_snake_positions, snake)
+
 def move_snake(canvas, snake_positions, snake):
     head_position_x = snake_positions[0][0]
     head_position_y = snake_positions[0][1]
@@ -65,7 +69,8 @@ def move_snake(canvas, snake_positions, snake):
             snake_positions[i][0] + SQUARE_SIZE,
             snake_positions[i][1] + SQUARE_SIZE
         )
-    canvas.after(100, move_snake, canvas, snake_positions, snake)
+    
+    return snake_positions
 
 
 def main():
@@ -76,7 +81,7 @@ def main():
     snake = create_snake(canvas, snake_positions)
     create_food(canvas, food_position)
 
-    move_snake(canvas, snake_positions, snake)
+    update_frame(canvas, snake_positions, snake)
     canvas.mainloop()
 
 if __name__ == "__main__":
