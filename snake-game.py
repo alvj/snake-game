@@ -113,10 +113,14 @@ def check_collisions(snake_positions):
 
 
 def on_key_press(key_information):
-    new_direction = key_information.keysym
-
     global direction
-    direction = new_direction
+    new_direction = key_information.keysym
+    possible_directions = ["Left", "Right", "Up", "Down"]
+    opposites = [["Left", "Right"], ["Right", "Left"], ["Up", "Down"], ["Down", "Up"]]
+    
+    if new_direction in possible_directions
+    and [new_direction, direction] not in opposites:
+        direction = new_direction
 
 
 def main():
