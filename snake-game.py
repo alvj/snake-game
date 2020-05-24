@@ -6,11 +6,14 @@ from random import randint
 WIDTH = 800
 HEIGHT = 800
 SQUARE_SIZE = 50
+FONT_SIZE = 30
+TEXT_PADDING = 30
 
 #   COLORS
 # ------------
 SNAKE_COLOR = "#07f036"
 FOOD_COLOR = "#db2a16"
+BACKGROUND_COLOR = "#111"
 
 #  GAME CONSTANTS
 # -----------------
@@ -30,7 +33,7 @@ def create_canvas(width, height):
         top,
         width=width,
         height=height,
-        background="#111",
+        background=BACKGROUND_COLOR,
         highlightthickness=0
     )
     canvas.pack()
@@ -62,18 +65,33 @@ def create_food(canvas, food_position):
     )
     return food
 
+def create_score(canvas):
+    # Add 1 to avoid artifacting with the snake outline when going side by side
+    canvas.create_line(0, HEIGHT + 1, WIDTH, HEIGHT + 1, fill="white")
+    score_text = canvas.create_text(
+        WIDTH // 2,
+        HEIGHT + (FONT_SIZE // 2) + (TEXT_PADDING // 2),
+        text="Score: 0",
+        fill="white",
+        font=("Arial", FONT_SIZE, "bold")
+    )
+    return score_text
 
-def update_frame(canvas, snake_positions, snake, food_position, food, score):
+
+def update_frame(canvas, snake_positions, snake, food_position, food, score, score_text):
     if check_collisions(snake_positions):
+        canvas.delete("all")
+        initialize_game(canvas)
         return
     if check_food_collision(canvas, snake_positions, food_position):
         score += 1
-        print(score)
         food_position = set_new_food_position(snake_positions)
         move_food(canvas, food_position, food)
         add_body_part(canvas, snake_positions, snake)
     new_snake_positions = move_snake(canvas, snake_positions, snake)
-    canvas.after(GAME_SPEED, update_frame, canvas, new_snake_positions, snake, food_position, food, score)
+
+    canvas.itemconfigure(score_text, text="Score: " + str(score))
+    canvas.after(GAME_SPEED, update_frame, canvas, new_snake_positions, snake, food_position, food, score, score_text)
 
 
 def move_snake(canvas, snake_positions, snake):
@@ -175,9 +193,7 @@ def move_food(canvas, food_position, food):
         food_position[1] + SQUARE_SIZE
     )
 
-
-def main():
-    canvas = create_canvas(WIDTH, HEIGHT)
+def initialize_game(canvas):
     # SET VARIABLES
     # Each list inside this list stores the x and y coordinate of a body part
     snake_positions = [[SQUARE_SIZE * 5, SQUARE_SIZE * 5], [SQUARE_SIZE * 4, SQUARE_SIZE * 5], [SQUARE_SIZE * 3, SQUARE_SIZE * 5]]
@@ -189,9 +205,14 @@ def main():
     # Initialize the game
     snake = create_snake(canvas, snake_positions)
     food = create_food(canvas, food_position)
+    score_text = create_score(canvas)
     canvas.bind_all("<Key>", on_key_press)
-    canvas.after(2000, update_frame, canvas, snake_positions, snake, food_position, food, score)
+    canvas.after(2000, update_frame, canvas, snake_positions, snake, food_position, food, score, score_text)
     canvas.mainloop()
+
+def main():
+    canvas = create_canvas(WIDTH, HEIGHT + FONT_SIZE + TEXT_PADDING)
+    initialize_game(canvas)
 
 
 if __name__ == "__main__":
