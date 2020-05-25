@@ -41,6 +41,25 @@ def create_canvas(width, height):
     return canvas
 
 
+def initialize_game(canvas):
+    # SET VARIABLES
+    # Each list inside this list stores the x and y coordinate of a body part
+    canvas.delete("all")
+    snake_positions = [[SQUARE_SIZE * 5, SQUARE_SIZE * 5], [SQUARE_SIZE * 4, SQUARE_SIZE * 5], [SQUARE_SIZE * 3, SQUARE_SIZE * 5]]
+    food_position = set_new_food_position(snake_positions)
+    score = 0
+    global direction
+    direction = "Right"
+
+    # Initialize the game
+    snake = create_snake(canvas, snake_positions)
+    food = create_food(canvas, food_position)
+    score_text = create_score(canvas)
+    canvas.bind_all("<Key>", on_key_press)
+    canvas.after(2000, update_frame, canvas, snake_positions, snake, food_position, food, score, score_text)
+    canvas.mainloop()
+
+
 def create_snake(canvas, snake_positions):
     snake = []
     for position in snake_positions:
@@ -81,7 +100,8 @@ def create_score(canvas):
 def update_frame(canvas, snake_positions, snake, food_position, food, score, score_text):
     if check_collisions(snake_positions):
         canvas.delete("all")
-        initialize_game(canvas)
+        draw_final_score(canvas, score)
+        canvas.after(2000, initialize_game, canvas)
         return
     if check_food_collision(canvas, snake_positions, food_position):
         score += 1
@@ -193,22 +213,15 @@ def move_food(canvas, food_position, food):
         food_position[1] + SQUARE_SIZE
     )
 
-def initialize_game(canvas):
-    # SET VARIABLES
-    # Each list inside this list stores the x and y coordinate of a body part
-    snake_positions = [[SQUARE_SIZE * 5, SQUARE_SIZE * 5], [SQUARE_SIZE * 4, SQUARE_SIZE * 5], [SQUARE_SIZE * 3, SQUARE_SIZE * 5]]
-    food_position = set_new_food_position(snake_positions)
-    score = 0
-    global direction
-    direction = "Right"
 
-    # Initialize the game
-    snake = create_snake(canvas, snake_positions)
-    food = create_food(canvas, food_position)
-    score_text = create_score(canvas)
-    canvas.bind_all("<Key>", on_key_press)
-    canvas.after(2000, update_frame, canvas, snake_positions, snake, food_position, food, score, score_text)
-    canvas.mainloop()
+def draw_final_score(canvas, score):
+    canvas.create_text(
+        WIDTH // 2,
+        (HEIGHT + FONT_SIZE + FONT_SIZE) // 2,
+        fill="white",
+        font=("Arial", FONT_SIZE * 2, "bold"),
+        text="GAME OVER\nFinal score: " + str(score)
+    )
 
 def main():
     canvas = create_canvas(WIDTH, HEIGHT + FONT_SIZE + TEXT_PADDING)
